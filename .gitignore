@@ -1,0 +1,12 @@
+# Ignore files without extensions
+*
+!/**/
+!*.*
+
+# Latex build files
+*.aux
+*.log
+*.out
+*.pdf
+*.synctex.gz
+
