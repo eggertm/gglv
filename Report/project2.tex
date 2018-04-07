@@ -1,0 +1,88 @@
+\documentclass[a4paper]{article}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{csquotes}
+\usepackage{dirtytalk}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+}
+\newcommand\todo[1]{\textcolor{red}{TODO: #1}}
+
+\title{REI602M Machine Learning: Allstate Claims Severity}
+
+\author{Eggert Jon Magnusson and Thor Tomasarson}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+\todo{...}
+
+% 0.5 til 1 bls.
+% * Hvað var gert?
+% * Hvers vegna?
+% * Hvernig?
+
+\section{Implementation}
+\todo{...}
+
+% * Lýsing á aðferðafræði.
+% * Stutt lýsing á þeim reikniritum sem eru notuð: flokkarar, aðhvarfsgreiningarlíkön, t-SNE, þyrpingagreining, …
+% * Stutt lýsing á gagnasafni/söfnum.
+% * Hvernig nákvæmni spálíkana er metin.
+% * Hvernig gildi á “hyperparametrum” eru valin
+%
+% Nákvæmni í lýsingu á að miðast við að samnemendur ykkar í REI602M geti endurtekið tilraunirnar án teljandi vandræða
+
+\section{Results}
+\todo{...}
+
+% * Fyrir verkefni #1 og #2: Töflur/myndir sem sýna t.d.
+%   * Tíðnirit (e. histograms) fyrir stakar inntaksbreytur/úttaksbreytu, myndir sem sýna fylgni 2ja inntaksbreyta ofl.
+%   * Nákvæmni einstakra líkana.
+%   * Áhrif “hyperparametra” á gæði líkana.
+%   * Yfirlit yfir inntaksbreytur sem mestu máli skipta.
+
+% * Skrifið stutta lýsingu á því sem myndir og töflur sýna. Númerið allar myndir og töflur og notið númer þegar vísað er í úr texta (“Á mynd 2 má sjá …”) Gætið þess texti á myndum sé læsilegur (ekki of lítill).
+
+% * Lýsið stuttlega tilraunum sem skiluðu litlu (“misheppnuðust”)
+
+\section{Conclusion}
+\todo{...}
+
+% * Helstu ályktanir.
+% * Næstu skref. (Hvernig mynduð þið halda áfram með verkefnið?)
+
+\newpage
+\appendix
+\section{Appendix}
+
+\subsection{Code}
+\label{sec:code}
+\lstinputlisting[caption={Python code}, label={lst:code}, language=Python, basicstyle=\small]{../Script.py}
+
+\label{sec:output}
+\lstinputlisting[caption={The output from execution of the python code}, label={lst:output}, basicstyle=\small, columns=flexible]{../ScriptOutput.txt}
+
+% For example, you can cite the Nano 3 Lecture notes \cite{nano3}.
+% \newpage
+% \begin{thebibliography}{9}
+% \bibitem{nano3}
+%   K. Grove-Rasmussen og Jesper Nygård,
+%   \emph{Kvantefænomener i Nanosystemer}.
+%   Niels Bohr Institute \& Nano-Science Center, Københavns Universitet
+% \end{thebibliography}
+\end{document}
