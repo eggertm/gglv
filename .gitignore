@@ -10,3 +10,5 @@
 *.pdf
 *.synctex.gz
 
+# JuPyter Notebook files
+.ipynb_checkpoints/*
