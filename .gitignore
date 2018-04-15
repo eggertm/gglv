@@ -9,6 +9,8 @@
 *.out
 *.pdf
 *.synctex.gz
+*.bbl
+*.blg
 
 # JuPyter Notebook files
 .ipynb_checkpoints/*

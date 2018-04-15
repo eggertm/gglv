@@ -28,8 +28,40 @@
 \begin{document}
 \maketitle
 
+\begin{abstract}
+The goal of this assignment is to find a good regression model that predicts the severity or loss for each insurance claim made by customers of the Allstate insurance.
+
+\begin{displayquote}
+Dataset Information: \\\\
+\say{Allstate is currently developing automated methods of predicting the cost, and hence severity, of claims. In this recruitment challenge, Kagglers are invited to show off their creativity and flex their technical chops by creating an algorithm which accurately predicts claims severity. Aspiring competitors will demonstrate insight into better ways to predict claims severity for the chance to be part of Allstate‘s efforts to ensure a worry-free customer experience.}
+\end{displayquote}
+
+\end{abstract}
+
 \section{Introduction}
-\todo{...}
+
+There are quite many methods available that serve as regression models. The methods tested out in this report are:\\\\
+Linear:
+\begin{itemize}
+    \item LinearRegression
+    \item Ridge
+    \item Lasso
+    \item Elastic-Net
+\end{itemize}
+Non-linear:
+\begin{itemize}
+    \item KNeighborsRegressor
+    \item SVR
+    \item BaggingRegressor
+    \item RandomForestRegressor
+    \item ExtraTreesRegressor
+    \item MLP (neural network)
+\end{itemize}
+These models require different kind of preprocessing of the data in order to be efficient. The need for preprocessing ranges from next to no preprocessing up to extensive investigation of each attributes contribution to the output.
+
+To start with each of these models where tested out with default parameters to get a feel of there potential. Then a extensive evaluation of different hyper-parameters where tested out for the more promising methods with various degree of preprocessing.
+
+All experiments where done with Python in JuPyter, the methods tested where gotten from the Scikit-Learn library except for the neural network that was implemented with TensorFlow.
 
 % 0.5 til 1 bls.
 % * Hvað var gert?
@@ -37,7 +69,36 @@
 % * Hvernig?
 
 \section{Implementation}
+
+The work methodology for each regression model was as follows:
+\begin{enumerate}
+  \item Read the data in to memory
+  \item Peprocess the data
+  \item Test out various hyper-parameters
+  \item Evaluate the results with test data
+  \item Go back to step 2, if there seem to be need for it
+\end{enumerate}
+
+\subsection{Linear models}
+The linear models are sensitive to the input data. They can perform badly if the input data contains correlated attributes and they expect a normally distributed output.
+
+The basic ideal behind the linear models are that they are solving for minimum of the error obtained with equation \ref{eq:1}.
+\begin{equation} \label{eq:1}
+||X\omega - y||_2^2
+\end{equation}
+Where $X$ is the input data, $\omega$ are the model parameters and $y$ is the output data, in our case it is ‘loss’.
+
+Linear regression simply solves for equation \ref{eq:1} with no regularization of the model parameters. This can lead to severe overfitting of the training data and and is sensitive the input data used.
+
+Ridge regression adds in the $L^2$-norm penalty, which changes the problem to minimizing the error with equation \ref{eq:2}.
+\begin{equation} \label{eq:2}
+||X\omega - y||_2^2 + \lambda_2*||\omega||_2^2
+\end{equation}
+
 \todo{...}
+
+All these models are solving for minimum of error with $L^2$-norm, this counters the objective which is the find model with the minimum of the absolute mean error ($L^1$-norm).
+
 
 % * Lýsing á aðferðafræði.
 % * Stutt lýsing á þeim reikniritum sem eru notuð: flokkarar, aðhvarfsgreiningarlíkön, t-SNE, þyrpingagreining, …
