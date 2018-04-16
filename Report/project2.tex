@@ -4,6 +4,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{float}
 \usepackage{amsmath}
+\DeclareMathOperator*{\Max}{Max}
 \usepackage{amssymb}
 \usepackage{varwidth}
 \usepackage{graphicx}
@@ -116,9 +117,31 @@ All these models are solving for minimum of error with $L^2$-norm, this counters
 \subsection{Non-linear models}
 The non-linear models differ quite a lot on what there objective is and how they achieve it. \\\\
 \textbf{k-nearest neighbors} learns the data set and estimates value predictions based on averaging the k nearest neighbors output values. \\\\
-\textbf{Support vector regression} 
+\textbf{Support vector regression} solves for the “soft margin” with slack variables $\xi_n$ and $\xi_n^*$ that allow for violation on both sides. The problem can be formulated as:
+\begin{align} \label{eq:5}
+    &\min_{\omega} \{\frac{1}{2}\omega^T\omega + C\sum_i(\xi_n + \xi_n^*)\} \notag \\
+&\text{subject to} \notag \\
+    & \forall n : y_n - (x_n^T\omega + b) \leq \epsilon + \xi_n \notag \\
+    & \forall n : (x_n^T\omega + b) - y_n\leq \epsilon + \xi_n^* \notag \\
+    & \forall n : \xi_n^* \geq 0, \forall n : \xi_n \geq 0 \notag \\ \notag
+\end{align} % https://se.mathworks.com/help/stats/understanding-support-vector-machine-regression.html
+where the subscript $n$ denotes the $n$-th item in the data set.
+\subsubsection{Decision Trees}
+\textbf{Bagging Regression} uses the voting scheme of fitting multiple regression decision trees, where each decision tree models a random subset of the original data, and then aggregates there results to achieve higher precision. \\\\
+\textbf{Random Forest Regression} ...\\\\
+\textbf{Extra Trees Regression} 
+\subsubsection{Neural Network}
+\textbf{Multilayer perceptron (MLP)} 
 
 \subsection{Preprocessing}
+The preprocessing methods used for our results where for example:
+\begin{itemize}
+    \item Visual inspection of attribute (frequency, mean, std, distribution)
+    \item Correlation checks
+    \item Dimension reduction methods (PCA, t-SNE, Non-negative transform)
+\end{itemize}
+
+\todo{Describe PCA, t-SNE, NNt}
 
 
 % * Lýsing á aðferðafræði.
