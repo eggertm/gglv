@@ -4,6 +4,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{float}
 \usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{varwidth}
 \usepackage{graphicx}
 \usepackage{csquotes}
 \usepackage{dirtytalk}
@@ -40,23 +42,29 @@ Dataset Information: \\\\
 
 \section{Introduction}
 
-There are quite many methods available that serve as regression models. The methods tested out in this report are:\\\\
-Linear:
-\begin{itemize}
-    \item LinearRegression
-    \item Ridge
-    \item Lasso
-    \item Elastic-Net
-\end{itemize}
-Non-linear:
-\begin{itemize}
-    \item KNeighborsRegressor
-    \item SVR
-    \item BaggingRegressor
-    \item RandomForestRegressor
-    \item ExtraTreesRegressor
-    \item MLP (neural network)
-\end{itemize}
+There are quite many methods available that serve as regression models. The methods tested out in this report are: \\
+
+\begin{varwidth}[t]{.5\textwidth}
+    Linear:
+    \begin{itemize}
+        \item Linear Regression
+        \item Ridge
+        \item Lasso
+        \item Elastic-Net
+    \end{itemize}
+\end{varwidth}
+\hspace{4em}
+\begin{varwidth}[t]{.5\textwidth}
+    Non-linear:
+    \begin{itemize}
+        \item K-Neighbors Regression
+        \item Support Vector Regression
+        \item Bagging Regression
+        \item Random Forest Regression
+        \item Extra Trees Regression
+        \item MLP (Neural Network)
+    \end{itemize}
+\end{varwidth} \\\\
 These models require different kind of preprocessing of the data in order to be efficient. The need for preprocessing ranges from next to no preprocessing up to extensive investigation of each attributes contribution to the output.
 
 To start with each of these models where tested out with default parameters to get a feel of there potential. Then a extensive evaluation of different hyper-parameters where tested out for the more promising methods with various degree of preprocessing.
@@ -82,22 +90,35 @@ The work methodology for each regression model was as follows:
 \subsection{Linear models}
 The linear models are sensitive to the input data. They can perform badly if the input data contains correlated attributes and they expect a normally distributed output.
 
-The basic ideal behind the linear models are that they are solving for minimum of the error obtained with equation \ref{eq:1}.
+The basic ideal behind the linear models are that they are solving equation~\ref{eq:1}, which is minimizing $L^2$-norm error of a hyperplane.
 \begin{equation} \label{eq:1}
-||X\omega - y||_2^2
+\min_{\omega\in\mathbb{R}^p}||X\omega - y||_2^2
 \end{equation}
-Where $X$ is the input data, $\omega$ are the model parameters and $y$ is the output data, in our case it is ‘loss’.
-
-Linear regression simply solves for equation \ref{eq:1} with no regularization of the model parameters. This can lead to severe overfitting of the training data and and is sensitive the input data used.
-
-Ridge regression adds in the $L^2$-norm penalty, which changes the problem to minimizing the error with equation \ref{eq:2}.
+Where $X$ is the input data, $p$ is the input dimension, $\omega$ are the model parameters and $y$ is the output data, in our case it is ‘loss’. \\\\
+\textbf{Linear regression} simply solves for equation \ref{eq:1} with no regularization of the model parameters. This can lead to severe overfitting of the training data and is sensitive the input data used. \\\\
+\textbf{Ridge regression} adds in the $L^2$-norm penalty, which changes the problem to minimizing the error with equation~\ref{eq:2}.
 \begin{equation} \label{eq:2}
-||X\omega - y||_2^2 + \lambda_2*||\omega||_2^2
+\min_{\omega\in\mathbb{R}^p} \{||X\omega - y||_2^2 + \lambda_2*||\omega||_2^2 \}
 \end{equation}
-
-\todo{...}
+This forces the model parameters to be as small as possible.\\\\
+\textbf{Lasso regression} adds in the $L^1$-norm penalty, and is thus solving for minimum of equation~\ref{eq:3}
+\begin{equation} \label{eq:3}
+\min_{\omega\in\mathbb{R}^p}  \{||X\omega - y||_2^2 + \lambda_1*||\omega||_1\}
+\end{equation}
+This forces some of the model parameters to be zero, thus removing unneeded attributes. \\\\
+\textbf{Elastic-Net} combines the regularization of both Ridge and Lasso, see equation~\ref{eq:4}. By that it combines the effect of $L^1$-norm to force unneeded parameters to zero and the $L^2$-norm to hold of a little information from that parameter (no setting to complete zero).
+\begin{equation} \label{eq:4}
+\min_{\omega\in\mathbb{R}^p}  \{||X\omega - y||_2^2 + \lambda_1*||\omega||_1 + \lambda_2*||\omega||_2^2\}
+\end{equation}
 
 All these models are solving for minimum of error with $L^2$-norm, this counters the objective which is the find model with the minimum of the absolute mean error ($L^1$-norm).
+
+\subsection{Non-linear models}
+The non-linear models differ quite a lot on what there objective is and how they achieve it. \\\\
+\textbf{k-nearest neighbors} learns the data set and estimates value predictions based on averaging the k nearest neighbors output values. \\\\
+\textbf{Support vector regression} 
+
+\subsection{Preprocessing}
 
 
 % * Lýsing á aðferðafræði.
