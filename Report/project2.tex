@@ -32,7 +32,7 @@
 \maketitle
 
 \begin{abstract}
-The goal of this assignment is to find a good regression model that predicts the severity or loss for each insurance claim made by customers of the Allstate insurance.
+The goal of this assignment is to find a good regression model that predicts the severity or loss for each insurance claim made by customers of the Allstate insurance. The dataset used in this report can be found at \url{https://www.kaggle.com/c/allstate-claims-severity}.
 
 \begin{displayquote}
 Dataset Information: \\\\
@@ -66,7 +66,7 @@ There are quite many methods available that serve as regression models. The meth
         \item MLP (Neural Network)
     \end{itemize}
 \end{varwidth} \\\\
-These models require different kind of preprocessing of the data in order to be efficient. The need for preprocessing ranges from next to no preprocessing up to extensive investigation of each attributes contribution to the output.
+These models require different kind of preprocessing of the data in order to be efficient. The need for preprocessing ranges from next to no preprocessing up to extensive investigation of each attributes contribution to the output. The dataset it self is well structured CSV files with more than 188’000 “labeled” data sets and consists of 130 attributes of which 14 are continuous and 116 are categorical.
 
 To start with each of these models where tested out with default parameters to get a feel of there potential. Then a extensive evaluation of different hyper-parameters where tested out for the more promising methods with various degree of preprocessing.
 
@@ -81,15 +81,16 @@ All experiments where done with Python in JuPyter, the methods tested where gott
 
 The work methodology for each regression model was as follows:
 \begin{enumerate}
-  \item Read the data in to memory
-  \item Peprocess the data
+  \item Read the data in to memory and split it to training and test datasets
+  \item Preprocess the data
   \item Test out various hyper-parameters
   \item Evaluate the results with test data
-  \item Go back to step 2, if there seem to be need for it
+  \item Go back to step 2 or 3, until decent results where obtained
 \end{enumerate}
+For all of these models the test error was evaluated with mean absolute error (MAE) on separate test data.
 
 \subsection{Linear models}
-The linear models are sensitive to the input data. They can perform badly if the input data contains correlated attributes and they expect a normally distributed output.
+The linear models are sensitive to the input data. They can perform badly if the input data contains correlated attributes as they expect a normally distributed output.
 
 The basic ideal behind the linear models are that they are solving equation~\ref{eq:1}, which is minimizing $L^2$-norm error of a hyperplane.
 \begin{equation} \label{eq:1}
@@ -116,7 +117,7 @@ All these models are solving for minimum of error with $L^2$-norm, this counters
 
 \subsection{Non-linear models}
 The non-linear models differ quite a lot on what there objective is and how they achieve it. \\\\
-\textbf{k-nearest neighbors} learns the data set and estimates value predictions based on averaging the k nearest neighbors output values. \\\\
+\textbf{k-nearest neighbors} learns the dataset and estimates value predictions based on averaging the k nearest neighbors output values. \\\\
 \textbf{Support vector regression} solves for the “soft margin” with slack variables $\xi_n$ and $\xi_n^*$ that allow for violation on both sides. The problem can be formulated as:
 \begin{align} \label{eq:5}
     &\min_{\omega} \{\frac{1}{2}\omega^T\omega + C\sum_i(\xi_n + \xi_n^*)\} \notag \\
@@ -125,23 +126,24 @@ The non-linear models differ quite a lot on what there objective is and how they
     & \forall n : (x_n^T\omega + b) - y_n\leq \epsilon + \xi_n^* \notag \\
     & \forall n : \xi_n^* \geq 0, \forall n : \xi_n \geq 0 \notag \\ \notag
 \end{align} % https://se.mathworks.com/help/stats/understanding-support-vector-machine-regression.html
-where the subscript $n$ denotes the $n$-th item in the data set.
+where the subscript $n$ denotes the $n$-th item in the dataset.
 \subsubsection{Decision Trees}
-\textbf{Bagging Regression} uses the voting scheme of fitting multiple regression decision trees, where each decision tree models a random subset of the original data, and then aggregates there results to achieve higher precision. \\\\
-\textbf{Random Forest Regression} ...\\\\
-\textbf{Extra Trees Regression} 
+The decision trees (DT) models considered here improve upon the classical week learner DT with a voting scheme. The voting scheme fits multiple regression DT and then aggregate there results to achieve higher precision. \\\\
+\textbf{Bagging Regression} models each decision tree with a random subset of the original data. \\\\
+\textbf{Extra Trees Regression} models multiple stochastic decision trees where each DT only models for random $D$ variables. \\\\
+\textbf{Random Forest Regression} combines the effects of both bagging and extra trees, by modeling decision trees with random subset of the data and only $D$ random variables.
 \subsubsection{Neural Network}
-\textbf{Multilayer perceptron (MLP)} 
+\textbf{Multilayer perceptron (MLP)} \todo{Do this better} a feedforward artificial neural network with ReLu activation function and an MAE objective function.
 
 \subsection{Preprocessing}
 The preprocessing methods used for our results where for example:
 \begin{itemize}
     \item Visual inspection of attribute (frequency, mean, std, distribution)
     \item Correlation checks
-    \item Dimension reduction methods (PCA, t-SNE, Non-negative transform)
+    \item Dimension reduction methods (PCA, t-SNE, Non-Negative Matrix Factorization)
 \end{itemize}
 
-\todo{Describe PCA, t-SNE, NNt}
+\todo{Describe PCA, t-SNE, NMF}
 
 
 % * Lýsing á aðferðafræði.
@@ -153,7 +155,33 @@ The preprocessing methods used for our results where for example:
 % Nákvæmni í lýsingu á að miðast við að samnemendur ykkar í REI602M geti endurtekið tilraunirnar án teljandi vandræða
 
 \section{Results}
-\todo{...}
+Investigation on the dataset lead to few interesting facts, which are listed here:
+\begin{itemize}
+    \item The output data (‘loss‘) is highly skewed to the left, see figure~\ref{fig:loss}
+    \item No value is missing
+    \item All continuous attributes are on the [0, 1] interval
+    \item Non of the continuous attributes correlates with the output (all with $|\rho| < 0.1$)
+    \item High correlation among some of the continuous attributes, see figure~\ref{fig:con-corr}
+    \item High correlation among some of the categorical attributes, eight pairs have $r_s > \tau > 0.90$
+    \item The highest correlated categorical attribute with the output is ‘cat80’ with $\tau=-0.38$, nine others with $|\tau| \geq 0.2$
+\end{itemize}
+Here the symbols $\rho$, $\tau$ and $r_s$ denote Pearson, Kendall's tau and Spearman’s rank correlation coefficients respectively. \\\\
+The facts listed indicate that an dimension reduction could be performed without big information loss.
+
+\begin{figure}[H]
+\centering
+\makebox[\textwidth]{\includegraphics[width=.9\paperwidth]{Images/distribution-loss.png}}
+\caption{Distribution plot of the output to the left and $log(1 + y_{loss})$ distribution to the right}
+\label{fig:loss}
+\end{figure}
+\begin{figure}[H]
+\centering
+\makebox[\textwidth]{\includegraphics[width=.9\paperwidth]{Images/continuous-correlation.png}}
+\caption{Five highest correlation pairs among continuous attributes}
+\label{fig:con-corr}
+\end{figure}
+
+\todo{Add MAE results for various models along with description of what was done to achieve it}
 
 % * Fyrir verkefni #1 og #2: Töflur/myndir sem sýna t.d.
 %   * Tíðnirit (e. histograms) fyrir stakar inntaksbreytur/úttaksbreytu, myndir sem sýna fylgni 2ja inntaksbreyta ofl.
@@ -175,7 +203,7 @@ The preprocessing methods used for our results where for example:
 \appendix
 \section{Appendix}
 
-\subsection{Code}
+\subsection{Code} % Could also just inclued cleaned-up JuPyter script as pdf https://tex.stackexchange.com/questions/105589/insert-pdf-file-in-latex-document
 \label{sec:code}
 \lstinputlisting[caption={Python code}, label={lst:code}, language=Python, basicstyle=\small]{../Script.py}
 
