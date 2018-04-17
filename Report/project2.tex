@@ -63,6 +63,7 @@ There are quite many methods available that serve as regression models. The meth
         \item Bagging Regression
         \item Random Forest Regression
         \item Extra Trees Regression
+        \item Gradient Boosting Regression
         \item MLP (Neural Network)
     \end{itemize}
 \end{varwidth} \\\\
@@ -87,7 +88,11 @@ The work methodology for each regression model was as follows:
   \item Evaluate the results with test data
   \item Go back to step 2 or 3, until decent results where obtained
 \end{enumerate}
-For all of these models the test error was evaluated with mean absolute error (MAE) on separate test data.
+For all of these models the test error was evaluated with mean absolute error (MAE) \ref{eq:0} on separate test data.
+\begin{equation} \label{eq:0}
+|y - \hat{y}|
+\end{equation}
+Where $y$ is the actual output and $\hat{y}$ is the predicted output.
 
 \subsection{Linear models}
 The linear models are sensitive to the input data. They can perform badly if the input data contains correlated attributes as they expect a normally distributed output.
@@ -131,7 +136,8 @@ where the subscript $n$ denotes the $n$-th item in the dataset.
 The decision trees (DT) models considered here improve upon the classical week learner DT with a voting scheme. The voting scheme fits multiple regression DT and then aggregate there results to achieve higher precision. \\\\
 \textbf{Bagging Regression} models each decision tree with a random subset of the original data. \\\\
 \textbf{Extra Trees Regression} models multiple stochastic decision trees where each DT only models for random $D$ variables. \\\\
-\textbf{Random Forest Regression} combines the effects of both bagging and extra trees, by modeling decision trees with random subset of the data and only $D$ random variables.
+\textbf{Random Forest Regression} combines the effects of both bagging and extra trees, by modeling decision trees on random subset of the data and with random $D$ variables. \\\\
+\textbf{Gradient Boosting Regression} starts with a single small decision tree and subsequent DT predict the error residual of the previous predictions.
 \subsubsection{Neural Network}
 \textbf{Multilayer perceptron (MLP)} \todo{Do this better} a feedforward artificial neural network with ReLu activation function and an MAE objective function.
 
@@ -180,8 +186,46 @@ The facts listed indicate that an dimension reduction could be performed without
 \caption{Five highest correlation pairs among continuous attributes}
 \label{fig:con-corr}
 \end{figure}
+To start of the modeling process few test runs where executed with all of the models to get a feel of there potential. Since the output is highly skewed it was transformed with $y=log(1 + y)$ in order to correct for the skewness, assumed that the liner-models would then perform better. However the results obtained with log-transform where so far off that when executing the inverse with $x^y - 1$ resulted in overflow errors and thus making the experiments useless.
+The highly correlated pairs of attributes where tackled by removing one from each pair, thus removing ['cont9', 'cont12', 'cat2', 'cat3', 'cat4', 'cat5', 'cat6', 'cat7', 'cat8', cat86].
+\begin{table}[H]
+\begin{tabular}{ |c|c|c|c| } 
+\hline
+Model & Training Error & Test Error & Parameters \\
+\hline
+LinearRegression & 1281.476 & 1655603234.882 & \\
+Ridge & 1183.76 & 1302.587 & alpha=1.0 \\
+Lasso & 1181.697 & 1305.573 & alpha=0.001 \\
+ElasticNet & 1488.597 & 1512.204 & \\
+KNeighborsRegressor & 1732.174 & 1747.104 & n\_neighbors=1 \\
+SVR & 1753.704 & 1755.613 & \\
+BaggingRegressor & 522.287 & 1295.292 & \\
+RandomForestRegressor & 473.832 & 1245.477 & n\_estimators=50 \\
+ExtraTreesRegressor & 0.0 & 1281.961 & n\_estimators=100 \\
+GradientBoostingRegressor & 1223.819 & 1296.367 & loss='huber' \\
+MLP (Scikit-Learn) & & 1229.617 & hidden\_layer\_sizes=(150,)\\
+\hline
+\end{tabular}
+\caption{\label{tab:start}The first tests (*If not specified then the default Scikit-Learn parameters where used)}
+\end{table}
+The first test results are listed in \ref{tab:start}. The MLP and the tree models give promising results, since they give the lowest test error even though they seem to have overfitted the training data. \\\\
+For the tree models a decision was made to study Gradient Boosting throughly since Scikit-Learn provides the Huber loss function \ref{eq:6} which is similar to MAE.
+\begin{equation} \label{eq:6}
+HuberLoss(y, \hat{y}) = \begin{cases} 
+                  \frac{1}{2}(y - \hat{y})^2 & for\ |x|\leq \alpha \\
+                  \alpha|y - \hat{y}|-\frac{1}{2}\alpha^2 & otherwise
+               \end{cases}
+\end{equation}
+The Gradient Boosting has quite many parameters, in order to find the best combination of hyper-parameters a thorough grid scan was executed. The grid scan was executed for n\_estimators=[5, 50, 250, 500], alpha=[0.9, 0.5, 0.1], learning\_rate=[0.1, 0.0001], min\_samples\_leaf=[10, 20], min\_samples\_split=[10, 20] and max\_depth=[2, 3, 6]. The lowest mean absolute error of 1149.09 was obtained with (alpha=0.5, n\_estimators=250, max\_depth=6, learning\_rate=0.1, min\_samples\_leaf=20, min\_samples\_split=20), the result can be seen in figure~\ref{fig:gbr}.
 
-\todo{Add MAE results for various models along with description of what was done to achieve it}
+\begin{figure}[H]
+\centering
+\includegraphics{Images/gbr.png}
+\caption{Results for Gradient Boosting grid search}
+\label{fig:gbr}
+\end{figure}
+
+\todo{Add more + MLP}
 
 % * Fyrir verkefni #1 og #2: Töflur/myndir sem sýna t.d.
 %   * Tíðnirit (e. histograms) fyrir stakar inntaksbreytur/úttaksbreytu, myndir sem sýna fylgni 2ja inntaksbreyta ofl.
