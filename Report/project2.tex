@@ -6,6 +6,7 @@
 \usepackage{amsmath}
 \DeclareMathOperator*{\Max}{Max}
 \usepackage{amssymb}
+\usepackage{pdfpages}
 \usepackage{varwidth}
 \usepackage{graphicx}
 \usepackage{csquotes}
@@ -146,10 +147,10 @@ The preprocessing methods used for our results where for example:
 \begin{itemize}
     \item Visual inspection of attribute (frequency, mean, std, distribution)
     \item Correlation checks
-    \item Dimension reduction methods (PCA, t-SNE, Non-Negative Matrix Factorization)
+    \item Dimension reduction methods (PCA and Non-Negative Matrix Factorization)
 \end{itemize}
 
-\todo{Describe PCA, t-SNE, NMF}
+\todo{Describe PCA and NMF}
 
 
 % * Lýsing á aðferðafræði.
@@ -243,16 +244,14 @@ The Gradient Boosting has quite many parameters, in order to find the best combi
 % * Helstu ályktanir.
 % * Næstu skref. (Hvernig mynduð þið halda áfram með verkefnið?)
 
-\newpage
 \appendix
-\section{Appendix}
+\setlength{\voffset}{0cm}
+\setlength{\hoffset}{0cm}
 
-\subsection{Code} % Could also just inclued cleaned-up JuPyter script as pdf https://tex.stackexchange.com/questions/105589/insert-pdf-file-in-latex-document
-\label{sec:code}
-\lstinputlisting[caption={Python code}, label={lst:code}, language=Python, basicstyle=\small]{../Script.py}
+\includepdf[pages=-]{Images/Appendix.pdf}
 
-\label{sec:output}
-\lstinputlisting[caption={The output from execution of the python code}, label={lst:output}, basicstyle=\small, columns=flexible]{../ScriptOutput.txt}
+\setlength{\voffset}{-2.54cm}
+\setlength{\hoffset}{-2.54cm}
 
 % For example, you can cite the Nano 3 Lecture notes \cite{nano3}.
 % \newpage
