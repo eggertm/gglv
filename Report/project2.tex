@@ -114,7 +114,7 @@ This forces the model parameters to be as small as possible.\\\\
 \min_{\omega\in\mathbb{R}^p}  \{||X\omega - y||_2^2 + \lambda_1*||\omega||_1\}
 \end{equation}
 This forces some of the model parameters to be zero, thus removing unneeded attributes. \\\\
-\textbf{Elastic-Net} combines the regularization of both Ridge and Lasso, see equation~\ref{eq:4}. By that it combines the effect of $L^1$-norm to force unneeded parameters to zero and the $L^2$-norm to hold of a little information from that parameter (no setting to complete zero).
+\textbf{Elastic-Net} combines the regularization of both Ridge and Lasso, see equation~\ref{eq:4}. By that it combines the effect of $L^1$-norm to force unneeded parameters to zero and the $L^2$-norm to hold of a little information from that parameter (not setting to complete zero).
 \begin{equation} \label{eq:4}
 \min_{\omega\in\mathbb{R}^p}  \{||X\omega - y||_2^2 + \lambda_1*||\omega||_1 + \lambda_2*||\omega||_2^2\}
 \end{equation}
@@ -136,7 +136,7 @@ where the subscript $n$ denotes the $n$-th item in the dataset.
 \subsubsection{Decision Trees}
 The decision trees (DT) models considered here improve upon the classical week learner DT with a voting scheme. The voting scheme fits multiple regression DT and then aggregate there results to achieve higher precision. \\\\
 \textbf{Bagging Regression} models each decision tree with a random subset of the original data. \\\\
-\textbf{Extra Trees Regression} models multiple stochastic decision trees where each DT only models for random $D$ variables. \\\\
+\textbf{Extra Trees Regression} models multiple stochastic decision trees where each DT only models for random $D$ variables. \\\\ % TODO: Possibly incorrect
 \textbf{Random Forest Regression} combines the effects of both bagging and extra trees, by modeling decision trees on random subset of the data and with random $D$ variables. \\\\
 \textbf{Gradient Boosting Regression} starts with a single small decision tree and subsequent DT predict the error residual of the previous predictions.
 \subsubsection{Neural Network}
@@ -172,7 +172,7 @@ Investigation on the dataset lead to few interesting facts, which are listed her
     \item High correlation among some of the categorical attributes, eight pairs have $r_s > \tau > 0.90$
     \item The highest correlated categorical attribute with the output is ‘cat80’ with $\tau=-0.38$, nine others with $|\tau| \geq 0.2$
 \end{itemize}
-Here the symbols $\rho$, $\tau$ and $r_s$ denote Pearson, Kendall's tau and Spearman’s rank correlation coefficients respectively. \\\\
+Here above the symbols $\rho$, $\tau$ and $r_s$ denote Pearson, Kendall's tau and Spearman’s rank correlation coefficients respectively. \\\\
 The facts listed indicate that an dimension reduction could be performed without big information loss.
 
 \begin{figure}[H]
@@ -188,7 +188,7 @@ The facts listed indicate that an dimension reduction could be performed without
 \label{fig:con-corr}
 \end{figure}
 To start of the modeling process few test runs where executed with all of the models to get a feel of there potential. Since the output is highly skewed it was transformed with $y=log(1 + y)$ in order to correct for the skewness, assumed that the liner-models would then perform better. However the results obtained with log-transform where so far off that when executing the inverse with $x^y - 1$ resulted in overflow errors and thus making the experiments useless.
-The highly correlated pairs of attributes where tackled by removing one from each pair, thus removing ['cont9', 'cont12', 'cat2', 'cat3', 'cat4', 'cat5', 'cat6', 'cat7', 'cat8', cat86].
+The highly correlated pairs of attributes where tackled by removing one from each pair, thus removing ['cont9', 'cont12', 'cat2', 'cat3', 'cat4', 'cat5', 'cat6', 'cat7', 'cat8', 'cat86'].
 \begin{table}[H]
 \begin{tabular}{ |c|c|c|c| } 
 \hline
@@ -217,7 +217,7 @@ HuberLoss(y, \hat{y}) = \begin{cases}
                   \alpha|y - \hat{y}|-\frac{1}{2}\alpha^2 & otherwise
                \end{cases}
 \end{equation}
-The Gradient Boosting has quite many parameters, in order to find the best combination of hyper-parameters a thorough grid scan was executed. The grid scan was executed for n\_estimators=[5, 50, 250, 500], alpha=[0.9, 0.5, 0.1], learning\_rate=[0.1, 0.0001], min\_samples\_leaf=[10, 20], min\_samples\_split=[10, 20] and max\_depth=[2, 3, 6]. The lowest mean absolute error of 1149.09 was obtained with (alpha=0.5, n\_estimators=250, max\_depth=6, learning\_rate=0.1, min\_samples\_leaf=20, min\_samples\_split=20), the result can be seen in figure~\ref{fig:gbr}.
+The Gradient Boosting has quite many parameters, in order to find the best combination of hyper-parameters a thorough grid scan was executed. The grid scan was executed for n\_estimators=[5, 50, 250, 500], alpha=[0.9, 0.5, 0.1], learning\_rate=[0.1, 0.0001], min\_samples\_leaf=[10, 20], min\_samples\_split=[10, 20] and max\_depth=[2, 3, 6]. The lowest mean absolute error of 1149.09 was obtained with (alpha=0.5, n\_estimators=250, max\_depth=6, learning\_rate=0.1, min\_samples\_leaf=20, min\_samples\_split=20), the results can be seen in figure~\ref{fig:gbr}.
 
 \begin{figure}[H]
 \centering
