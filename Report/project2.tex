@@ -226,7 +226,7 @@ The Gradient Boosting has quite many parameters, in order to find the best combi
 \label{fig:gbr}
 \end{figure}
 
-A neural network was implemented for Keras/Tensorflow.  SKLearn's MLPRegressor was used at first, but Keras allows more fine-grained specification of various parameters of the problem, such as direct minimization of mean absolute error.  During training, a validation set is employed to measure improvement of training.
+A neural network was implemented using Keras/Tensorflow.  SKLearn's MLPRegressor was used at first, but Keras allows more fine-grained specification of various parameters of the problem, such as direct minimization of mean absolute error.  During training, a validation set is employed to measure improvement of training.  We opted to use rectified linear units (ReLU).
 
 A big problem with the neural network proved to be overfitting, where the model gave a very low training error but the test error increased over time.  
 To address this, two strategies were used, \textit{dropout}, and \textit{early stopping } combined with \textit{model checkpointing}. 
@@ -235,9 +235,11 @@ Dropout is a method where a neuron in a layer are blanked (\say{dropped out}) wi
 
 Model checkpointing provides a method to save the state of the model every time an improvement of some metric is observed.  In our case, we were concerned with validation loss, i.e. the output of the loss function over the validation set, whenever an improvement is made, the whole model was saved to a file.  
 
-Early stopping is a method to stop training of a neural network when a certain metric stops improving.  This was again used to halt training when validation loss no longer improved for $n_p$ epochs, where $n_p$ is a patience constant, set to 10 in our runs.
+Early stopping is a method to stop training of a neural network when a certain metric stops improving.  This was again used to halt training when validation loss no longer improved for $n_p$ epochs, where $n_p$ is a patience constant, set to 10 in our runs.  
 
-\todo{Add more + MLP}
+Using a combination of early stopping and model checkpointing allows us to use the model that performs best on the validation data set and throw away the results of overfitting.   
+
+\todo{figures for Keras}
 
 % * Fyrir verkefni #1 og #2: Töflur/myndir sem sýna t.d.
 %   * Tíðnirit (e. histograms) fyrir stakar inntaksbreytur/úttaksbreytu, myndir sem sýna fylgni 2ja inntaksbreyta ofl.
@@ -250,7 +252,8 @@ Early stopping is a method to stop training of a neural network when a certain m
 % * Lýsið stuttlega tilraunum sem skiluðu litlu (“misheppnuðust”)
 
 \section{Conclusion}
-\todo{...}
+
+\todo{Næstu skref}
 
 % * Helstu ályktanir.
 % * Næstu skref. (Hvernig mynduð þið halda áfram með verkefnið?)
