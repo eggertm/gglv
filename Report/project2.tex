@@ -70,7 +70,7 @@ There are quite many methods available that serve as regression models. The meth
 \end{varwidth} \\\\
 These models require different kind of preprocessing of the data in order to be efficient. The need for preprocessing ranges from next to no preprocessing up to extensive investigation of each attributes contribution to the output. The dataset it self is well structured CSV files with more than 188’000 “labeled” data sets and consists of 130 attributes of which 14 are continuous and 116 are categorical.
 
-To start with each of these models where tested out with default parameters to get a feel of there potential. Then a extensive evaluation of different hyper-parameters where tested out for the more promising methods with various degree of preprocessing.
+To start with each of these models were tested out with default parameters to get a feel of there potential. Then a extensive evaluation of different hyper-parameters where tested out for the more promising methods with various degree of preprocessing.
 
 All experiments where done with Python in JuPyter, the methods tested where gotten from the Scikit-Learn library except for the neural network that was implemented with TensorFlow.
 
@@ -187,7 +187,7 @@ The facts listed indicate that an dimension reduction could be performed without
 \caption{Five highest correlation pairs among continuous attributes}
 \label{fig:con-corr}
 \end{figure}
-To start of the modeling process few test runs where executed with all of the models to get a feel of there potential. Since the output is highly skewed it was transformed with $y=log(1 + y)$ in order to correct for the skewness, assumed that the liner-models would then perform better. However the results obtained with log-transform where so far off that when executing the inverse with $x^y - 1$ resulted in overflow errors and thus making the experiments useless.
+To start of the modeling process few test runs were executed with all of the models to get a feel of there potential. Since the output is highly skewed it was transformed with $y=log(1 + y)$ in order to correct for the skewness, assumed that the liner-models would then perform better. However the results obtained with log-transform where so far off that when executing the inverse with $x^y - 1$ resulted in overflow errors and thus making the experiments useless.
 The highly correlated pairs of attributes where tackled by removing one from each pair, thus removing ['cont9', 'cont12', 'cat2', 'cat3', 'cat4', 'cat5', 'cat6', 'cat7', 'cat8', 'cat86'].
 \begin{table}[H]
 \begin{tabular}{ |c|c|c|c| } 
@@ -226,6 +226,17 @@ The Gradient Boosting has quite many parameters, in order to find the best combi
 \label{fig:gbr}
 \end{figure}
 
+A neural network was implemented for Keras/Tensorflow.  SKLearn's MLPRegressor was used at first, but Keras allows more fine-grained specification of various parameters of the problem, such as direct minimization of mean absolute error.  During training, a validation set is employed to measure improvement of training.
+
+A big problem with the neural network proved to be overfitting, where the model gave a very low training error but the test error increased over time.  
+To address this, two strategies were used, \textit{dropout}, and \textit{early stopping } combined with \textit{model checkpointing}. 
+
+Dropout is a method where a neuron in a layer are blanked (\say{dropped out}) with a probability $p$ during each training stage.  This reduces the interdependency of neurons in that layer, and makes the whole network more robust towards overfitting.
+
+Model checkpointing provides a method to save the state of the model every time an improvement of some metric is observed.  In our case, we were concerned with validation loss, i.e. the output of the loss function over the validation set, whenever an improvement is made, the whole model was saved to a file.  
+
+Early stopping is a method to stop training of a neural network when a certain metric stops improving.  This was again used to halt training when validation loss no longer improved for $n_p$ epochs, where $n_p$ is a patience constant, set to 10 in our runs.
+
 \todo{Add more + MLP}
 
 % * Fyrir verkefni #1 og #2: Töflur/myndir sem sýna t.d.
@@ -248,7 +259,7 @@ The Gradient Boosting has quite many parameters, in order to find the best combi
 \setlength{\voffset}{0cm}
 \setlength{\hoffset}{0cm}
 
-\includepdf[pages=-]{Images/Appendix.pdf}
+% \includepdf[pages=-]{Images/Appendix.pdf}
 
 \setlength{\voffset}{-2.54cm}
 \setlength{\hoffset}{-2.54cm}
