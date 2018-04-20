@@ -196,7 +196,7 @@ The highly correlated pairs of attributes where tackled by removing one from eac
 \begin{table}[H]
 \begin{tabular}{ |c|c|c|c|c| }
 \hline
-Model                     & Train Error & Test Error     & Train Error PCA & Train Error NMF \\
+Model                     & Train Error & Test Error     & Test Error PCA & Test Error NMF \\
 \hline
 LinearRegression          & 1480        & 8798305800.629 & 1336            & 1372 \\
 Ridge                     & 1481        & 1477.830       & 1336            & 1367 \\
@@ -214,7 +214,7 @@ SVR                       & 1724        & 1755.613       & -               & -  
 \caption{\label{tab:start}The first tests, all models used the default Scikit-Learn parameters except GradientBoostingRegressor with loss='huber'}
 \end{table}
 
-The first test results are listed in \ref{tab:start}. The MLP and the tree models give promising results, since they give the lowest test error even though they seem to have overfitted the training data. The training error for these models with PCA or NMF (with no column remove beforehand) applied to the data beforehand look promising as well for some of the models. The large deviation in improvement and in some cases even deterioration for the MNF transformation seems rather strange. \\\\
+The first test results are listed in table \ref{tab:start}. The MLP and the tree models give promising results, since they give the lowest test error even though they seem to have overfitted the training data. The training error for these models with PCA or NMF (with no column remove beforehand) applied to the data beforehand look promising as well for some of the models. The large deviation in improvement and in some cases even deterioration for the MNF transformation seems rather strange. \\\\
 For the tree models a decision was made to study Gradient Boosting throughly since Scikit-Learn provides the Huber loss function \ref{eq:6} which is similar to MAE.
 \begin{equation} \label{eq:6}
 HuberLoss(y, \hat{y}) = \begin{cases} 
@@ -223,7 +223,8 @@ HuberLoss(y, \hat{y}) = \begin{cases}
                \end{cases}
 \end{equation}
 The Gradient Boosting has quite many parameters, in order to find the best combination of hyper-parameters a thorough grid scan was executed. The grid scan was executed for n\_estimators=[5, 50, 250, 500], alpha=[0.9, 0.5, 0.1], learning\_rate=[0.1, 0.0001], min\_samples\_leaf=[10, 20], min\_samples\_split=[10, 20] and max\_depth=[2, 3, 6]. The lowest mean absolute error of 1161 was obtained with (alpha=0.5, n\_estimators=250, max\_depth=6, learning\_rate=0.1, min\_samples\_leaf=20, min\_samples\_split=20), the results can be seen in figure~\ref{fig:gbr}. Extra parameter lop was executed for only the n\_estimators parameter, giving the most promising results with (alpha=0.5, n\_estimators=600, max\_depth=6, learning\_rate=0.1, min\_samples\_leaf=20, min\_samples\_split=20) with and MAE of 1142.
-These set of parameters with the whole test dataset where used to predict the loss for the Kaggle submission. The results where rather disappointing with a MAE error of 1344. Attempt was made to improve this result by first applying NMF on the dataset and then using the Gradient Boosting model and as well with NMF on the dataset and $log(1 + y)$ on the output column, but these attempts resulted in MAE of 1642 and 1625 respectively.
+
+These set of parameters with the whole test dataset where used to predict the loss for the Kaggle submission. The results where rather disappointing with a MAE error of 1344. Attempt was made to improve this result by first applying NMF on the dataset and then using the Gradient Boosting model and as well with NMF on the dataset and $log(1 + y)$ on the output column. These attempts where speculated to improve the outcome based on the fact it improved in table \ref{tab:start} and the log transform was thought as to address the outliers better. However these attempts resulted in MAE of 1642 and 1625 respectively.
 
 \begin{figure}[H]
 \centering
