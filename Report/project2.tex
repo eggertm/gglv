@@ -87,7 +87,7 @@ The work methodology for each regression model was as follows:
   \item Preprocess the data
   \item Test out various hyper-parameters
   \item Evaluate the results with test data
-  \item Go back to step 2 or 3, until decent results where obtained
+  \item Go back to step 2 or 3, until decent results were obtained
 \end{enumerate}
 For all of these models the test error was evaluated with mean absolute error (MAE) \ref{eq:0} on separate test data.
 \begin{equation} \label{eq:0}
@@ -98,7 +98,7 @@ Where $y$ is the actual output and $\hat{y}$ is the predicted output.
 \subsection{Linear models}
 The linear models are sensitive to the input data. They can perform badly if the input data contains correlated attributes as they expect a normally distributed output.
 
-The basic ideal behind the linear models are that they are solving equation~\ref{eq:1}, which is minimizing $L^2$-norm error of a hyperplane.
+The basic ideal behind the linear models are that they are solving equation~\ref{eq:1}, which is minimizing $L^2$-norm error of a hyperplane.  
 \begin{equation} \label{eq:1}
 \min_{\omega\in\mathbb{R}^p}||X\omega - y||_2^2
 \end{equation}
@@ -146,7 +146,7 @@ ReLu(x) = x^+ = max(0, x)
 \end{equation}
 
 \subsection{Preprocessing}
-The preprocessing methods used for our results where for example:
+The preprocessing methods used for our results were for example:
 \begin{itemize}
     \item Visual inspection of attribute (frequency, mean, std, distribution)
     \item Correlation checks
@@ -170,8 +170,8 @@ Investigation on the dataset lead to few interesting facts, which are listed her
 \begin{itemize}
     \item The output data (‘loss‘) is highly skewed to the left, see figure~\ref{fig:loss}
     \item No value is missing
-    \item All continuous attributes are on the [0, 1] interval, thus all positive
-    \item Non of the continuous attributes correlates with the output (all with $|\rho| < 0.1$)
+    \item All continuous attributes are on the [0, 1] interval
+    \item None of the continuous attributes correlate with the output (all with $|\rho| < 0.1$)
     \item High correlation among some of the continuous attributes, see figure~\ref{fig:con-corr}
     \item High correlation among some of the categorical attributes, eight pairs have $r_s > \tau > 0.90$
     \item The highest correlated categorical attribute with the output is ‘cat80’ with $\tau=-0.38$, nine others with $|\tau| \geq 0.2$
@@ -191,10 +191,10 @@ The facts listed indicate that an dimension reduction could be performed without
 \caption{Five highest correlation pairs among continuous attributes}
 \label{fig:con-corr}
 \end{figure}
-To start of the modeling process few test runs were executed with all of the models to get a feel of their respective potential. Since the output is highly skewed it was transformed with $y=log(1 + y)$ in order to correct for the skewness, assumed that the liner-models would then perform better. However the results obtained with log-transform were so far off that when executing the inverse with $x^y - 1$ resulted in overflow errors and thus making some of the experiments useless.  Some tests were performed using a TruncatedSVD instead of PCA (marked Test Error SVD), other tests were performed using reduced features, where the most relevant features were selected from a previously trained LassoLARSCV model.  The only cases where using this provided any improvement was when using Linear Regression, which was known to be very sensitive to outliers.
+To start the modeling process a few test runs were executed with all of the models to get a feel of their respective potential. Since the output is highly skewed it was transformed with $y=log(1 + y)$ in order to correct for the skewness, assumed that the liner-models would then perform better. However the results obtained with log-transform were so far off that when executing the inverse with $x^y - 1$ resulted in overflow errors and thus making some of the experiments useless.  Some tests were performed using a TruncatedSVD instead of PCA (marked Test Error SVD), other tests were performed using reduced features, where the most relevant features were selected from a previously trained LassoLARSCV model.  The only cases where using this provided any improvement was when using Linear Regression, which was already known to be very sensitive to outliers.
 The highly correlated pairs of attributes where tackled by removing one from each pair, thus removing ['cont9', 'cont12', 'cat2', 'cat3', 'cat4', 'cat5', 'cat6', 'cat7', 'cat8', 'cat86'].
 \begin{table}[H]
-\begin{tabular}{ |c|c|c|c|c| }
+\begin{tabular}{ |c|c|c|c|c|c|c| }
 \hline
 Model                     & Train Error & Test Error     & Test Error PCA & Test Error NMF & Test Error SVD & Test Error RF \\
 \hline
@@ -242,15 +242,15 @@ A big problem with the neural network proved to be overfitting, where the model 
 
 To address this, two strategies were used, \textit{dropout}, and \textit{early stopping } combined with \textit{model checkpointing}. 
 
-Dropout is a method where a neuron in a layer are blanked (\say{dropped out}) with a probability $p$ during each training stage.  This reduces the interdependency of neurons in that layer, and makes the whole network more robust towards overfitting.  
+Dropout is a method in which  a neuron in a layer is blanked (\say{dropped out}) with a probability $p$ during each training stage.  This reduces the interdependency of neurons in that layer, and makes the whole network more robust towards overfitting.
 
 Model checkpointing provides a method to save the state of the model every time an improvement of some metric is observed.  In our case, we were concerned with validation loss, i.e. the output of the loss function over the validation set, whenever an improvement is made, the whole model was saved to a file.  
 
-Early stopping is a method to stop training of a neural network when a certain metric stops improving.  This was again used to halt training when validation loss no longer improved for $n_p$ epochs, where $n_p$ is a patience constant, set to 10 in our runs.  
+Early stopping is a method to stop training of a neural network when a certain metric stops improving.  This was again used to halt training when validation loss no longer improved for $n_p$ epochs, where $n_p$ is a patience constant, set to 5 in our runs, i.e. when validation loss does not improve for 5 epochs, we halt.  
 
 Using a combination of early stopping and model checkpointing allows us to use the model that performs best on the validation data set and throw away the results of overfitting.  Initial results with Keras were quite promising, so some time was spent to test various parameters.  Due to overfitting, one thing that was discovered was that increasing the number of epochs was not a very good way to increase improvement, but early stopping combined with checkpointing gave a lot better solution.  Training of 100 epochs or less was usually enough to trigger early stopping, i.e. the spot where validation loss started increasing while training loss still kept decreasing. 
 
-The best result from Kaggle was achieved via 450 nodes and a dropout percentage of ..., and gave 1139.33 as a score.
+The best result from Kaggle was achieved via 400 nodes and a dropout percentage of 30\%, and gave 1139.33 as a score.
 
 \todo{figures for Keras - grid search, and training vs cross-validation loss}
 
