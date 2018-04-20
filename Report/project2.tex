@@ -140,9 +140,9 @@ The decision trees (DT) models considered here improve upon the classical week l
 \textbf{Random Forest Regression} combines the effects of both bagging and extra trees, by modeling decision trees on random subset of the data and with random $D$ variables. \\\\
 \textbf{Gradient Boosting Regression} starts with a single small decision tree and subsequent DT predict the error residual of the previous predictions.
 \subsubsection{Neural Network}
-\textbf{Multilayer perceptron (MLP)} a feedforward artificial neural network with ReLu activation function \ref{eq:7} and an MAE objective function.
+\textbf{Multilayer perceptron (MLP)} we used a feedforward artificial neural network with ReLU activation function \ref{eq:7} and an MAE objective function.
 \begin{equation} \label{eq:7}
-ReLu(x) = x^+ = max(0, x)
+ReLU(x) = x^+ = max(0, x)
 \end{equation}
 
 \subsection{Preprocessing}
@@ -225,19 +225,18 @@ HuberLoss(y, \hat{y}) = \begin{cases}
                   \alpha|y - \hat{y}|-\frac{1}{2}\alpha^2 & otherwise
                \end{cases}
 \end{equation}
-The Gradient Boosting has quite many parameters, in order to find the best combination of hyper-parameters a thorough grid scan was executed. The grid scan was executed for n\_estimators=[5, 50, 250, 500], alpha=[0.9, 0.5, 0.1], learning\_rate=[0.1, 0.0001], min\_samples\_leaf=[10, 20], min\_samples\_split=[10, 20] and max\_depth=[2, 3, 6]. The lowest mean absolute error of 1161 was obtained with (alpha=0.5, n\_estimators=250, max\_depth=6, learning\_rate=0.1, min\_samples\_leaf=20, min\_samples\_split=20), the results can be seen in figure~\ref{fig:gbr}. Extra parameter lop was executed for only the n\_estimators parameter, giving the most promising results with (alpha=0.5, n\_estimators=600, max\_depth=6, learning\_rate=0.1, min\_samples\_leaf=20, min\_samples\_split=20) with and MAE of 1142.
+The Gradient Boosting has quite many parameters, in order to find the best combination of hyper-parameters a thorough grid scan was executed. The grid scan was executed for n\_estimators=[5, 50, 250, 500], alpha=[0.9, 0.5, 0.1], learning\_rate=[0.1, 0.0001], min\_samples\_leaf=[10, 20], min\_samples\_split=[10, 20] and max\_depth=[2, 3, 6]. The lowest mean absolute error of 1161 was obtained with (alpha=0.5, n\_estimators=250, max\_depth=6, learning\_rate=0.1, min\_samples\_leaf=20, min\_samples\_split=20), the results can be seen in figure~\ref{fig:gbr}. Extra parameter lop was executed for only the n\_estimators parameter, giving the most promising results with (alpha=0.5, n\_estimators=600, max\_depth=6, learning\_rate=0.1, min\_samples\_leaf=20, min\_samples\_split=20) with an MAE of 1142.
 
 These set of parameters with the whole test dataset where used to predict the loss for the Kaggle submission. The results where rather disappointing with a MAE error of 1344. Attempt was made to improve this result by first applying NMF on the dataset and then using the Gradient Boosting model and as well with NMF on the dataset and $log(1 + y)$ on the output column. These attempts where speculated to improve the outcome based on the fact it improved in table \ref{tab:start} and the log transform was thought as to address the outliers better. However these attempts resulted in MAE of 1642 and 1625 respectively.  
 
-Eventually, a GradientBoost regressor with  340 n\_estimators was trained using the training dataset using $loss=log(1 + y)$, and converting the predictions back using $loss_{pred} = e^{y_pred-1}$.  The resulting test set was submitted to kaggle and resulted in a mean absolute error of $1155.27344$.
+Eventually, a GradientBoost regressor with  340 n\_estimators was trained using the training dataset using $loss=log(1 + y)$, and converting the predictions back using $loss_{pred} = e^{y_{pred}} - 1$.  The resulting test set was submitted to Kaggle and resulted in a mean absolute error of $1155.27344$.
 
 \begin{figure}[H]
 \centering
 \includegraphics{Images/gbr.png}
 \caption{Results for Gradient Boosting grid search}
 \label{fig:gbr}
-\end{figure}
-
+\end{figure} ~\\\\
 A neural network was implemented using Keras/Tensorflow.  SKLearn's MLPRegressor was used at first, but Keras allows more fine-grained specification of various parameters of the problem, such as direct minimization of mean absolute error.  During training, a validation set is employed to measure improvement of training.  We opted to use rectified linear units (ReLU), as this appears to be the most favored method.  Various methods to determine the number of hidden layers and nodes were employed, but from early tests, it appeared that the first hidden layer should contain something between 400 and 600 nodes.  Using dropout apparently requires more than one hidden layer (although this is according to a google search), so the number of hidden layers was  set to 3, varying the size of the first hidden layer and the dropout percentage.  Setting the second and third layer to 50 and 10 appeared to give good results initially and was therefore chosen after some test runs with 1-3 hidden layers.
 
 A big problem with the neural network proved to be overfitting, where the model gave a very low training error but the test error increased over time.  
@@ -267,7 +266,7 @@ Increasing dropout appears to make the loss curve sharper with changes in node c
 	\label{fig:keras-search}
 \end{figure}
 
-The best result was achieved via 400 nodes and a dropout percentage of 30\%, and gave 1139.33 as a score on Kaggle.
+The best result was achieved via 400 nodes and a dropout percentage of 30\%, and gave a score of 1139.33 on Kaggle.
 
 
 % * Fyrir verkefni #1 og #2: Töflur/myndir sem sýna t.d.
@@ -282,15 +281,15 @@ The best result was achieved via 400 nodes and a dropout percentage of 30\%, and
 
 \section{Conclusion}
 
-Our best results appear to have been reached using Keras/Tensorflow.  It appears that the input is somewhat codependent, and that the Neural Network, with dropout, is able to cope best out of the models investigated with that fact.  Feature reduction using various methods did not appear to improve the performance of other models, and neither did PCA.  
+Our best results appear to have been reached using Keras/Tensorflow. It appears that the input is somewhat codependent, and that the Neural Network, with dropout, is able to cope best out of the models investigated with that fact. Feature and dimension reduction using various methods did not appear to improve the performance substantially.
 
 Future work would investigate better preprocessing, perhaps looking at feature construction methods.
 
-The performance of Keras/TensorFlow neural networks warrants further investigation.  One thing that might be considered is to train such a neural network with the whole training set (rather than setting aside a test set), as the Keras neural network only utilizes a static validation set.  The downside to this would be that external validation would be subject to kaggle.com.
+The performance of Keras/TensorFlow neural networks warrants further investigation. One thing that might be considered is to train such a neural network with the whole training set (rather than setting aside a test set), as the Keras neural network only utilizes a static validation set. The downside to this would be that external validation would be subject to kaggle.com.
 
-Gradient Boosting also performed well.  Perhaps this could be further investigated using XGBoost, which appears to be quite popular currently, especially for competitions.
+Gradient Boosting also performed well. Perhaps this could be further investigated using XGBoost, which appears to be quite popular currently, especially for competitions.
 
-Contributions were more or less equally divided.  Eggert worked primarily on Keras/Tensorflow and measuring some automated feature reduction methods.  Thor worked on Gradient Booster and analysis of feature contributions.
+Contributions were more or less equally divided. Eggert worked primarily on Keras/Tensorflow and measuring some automated feature reduction methods. Thor worked on Gradient Booster and analysis of feature contributions.
 % * Helstu ályktanir.
 % * Næstu skref. (Hvernig mynduð þið halda áfram með verkefnið?)
 
