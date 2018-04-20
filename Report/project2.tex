@@ -191,24 +191,27 @@ The facts listed indicate that an dimension reduction could be performed without
 \caption{Five highest correlation pairs among continuous attributes}
 \label{fig:con-corr}
 \end{figure}
-To start of the modeling process few test runs were executed with all of the models to get a feel of there potential. Since the output is highly skewed it was transformed with $y=log(1 + y)$ in order to correct for the skewness, assumed that the liner-models would then perform better. However the results obtained with log-transform where so far off that when executing the inverse with $x^y - 1$ resulted in overflow errors and thus making the experiments useless.
+To start of the modeling process few test runs were executed with all of the models to get a feel of their respective potential. Since the output is highly skewed it was transformed with $y=log(1 + y)$ in order to correct for the skewness, assumed that the liner-models would then perform better. However the results obtained with log-transform where so far off that when executing the inverse with $x^y - 1$ resulted in overflow errors and thus making the experiments useless.
 The highly correlated pairs of attributes where tackled by removing one from each pair, thus removing ['cont9', 'cont12', 'cat2', 'cat3', 'cat4', 'cat5', 'cat6', 'cat7', 'cat8', 'cat86'].
 \begin{table}[H]
 \begin{tabular}{ |c|c|c|c|c| }
 \hline
-Model                     & Train Error & Test Error     & Test Error PCA & Test Error NMF \\
+Model                     & Train Error & Test Error     & Test Error PCA & Test Error NMF & Test Error SVD & Test Error RF \\
 \hline
-LinearRegression          & 1480        & 8798305800.629 & 1336            & 1372 \\
-Ridge                     & 1481        & 1477.830       & 1336            & 1367 \\
-Lasso                     & 1493        & 1481.435       & 1335            & 1380 \\
-ElasticNet                & 1764        & 1745.976       & 1503            & 1969 \\
-BaggingRegressor          & 605         & 1519.984       & 1385            & 1350 \\
-ExtraTreesRegressor       & 0           & 1535.685       & 1379            & 1359 \\
-RandomForestRegressor     & 602         & 1519.550       & 1390            & 1344 \\
-GradientBoostingRegressor & 1453        & 1444.904       & 1317            & 1263 \\
-MLP                       & 1392        & 1410.916       & 1224            & 1363 \\
-KNeighborsRegressor       & 1364        & 1672.010       & -               & -    \\
-SVR                       & 1724        & 1755.613       & -               & -    \\
+LinearRegression          & 1480        & 8798305800.629 & 1336            & 1372 & 1242.29 & 1245.83 \\
+Ridge                     & 1481        & 1477.830       & 1336            & 1367 & -       & -       \\
+RidgeCV                   & 1242.29     & 1241.97        & -               & -    & 1245.68 & 1241.92 \\
+Lasso                     & 1493        & 1481.435       & 1335            & 1380 &    -    &    -    \\
+LassoCV                   & 1249        & 1245.15        & -               &  -   &    -    &    -    \\
+LassoLARSCV               & 1245.98     & 1240.34        & -               & -    & 1244.54 &    -    \\
+ElasticNet                & 1248.77     & 1244.99        & 1503            & 1969 & 1245.50 & 1246.94 \\
+BaggingRegressor          & 605         & 1519.984       & 1385            & 1350 & -       &    -    \\
+ExtraTreesRegressor       & 0           & 1535.685       & 1379            & 1359 & -       &    -    \\
+RandomForestRegressor     & 602         & 1519.550       & 1390            & 1344 & -       &    -    \\
+GradientBoostingRegressor & 1453        & 1444.904       & 1317            & 1263 & -       &    -    \\
+MLP                       & 1392        & 1410.916       & 1224            & 1363 & -       &    -    \\
+KNeighborsRegressor       & 1364        & 1672.010       & -               & -    & -       &    -    \\
+SVR                       & 1724        & 1755.613       & -               & -    & -       &    -    \\
 \hline
 \end{tabular}
 \caption{\label{tab:start}The first tests, all models used the default Scikit-Learn parameters except GradientBoostingRegressor with loss='huber'}
@@ -244,7 +247,7 @@ Model checkpointing provides a method to save the state of the model every time 
 
 Early stopping is a method to stop training of a neural network when a certain metric stops improving.  This was again used to halt training when validation loss no longer improved for $n_p$ epochs, where $n_p$ is a patience constant, set to 10 in our runs.  
 
-Using a combination of early stopping and model checkpointing allows us to use the model that performs best on the validation data set and throw away the results of overfitting.   
+Using a combination of early stopping and model checkpointing allows us to use the model that performs best on the validation data set and throw away the results of overfitting.  Initial results with Keras were quite promising, so some time was spent to test various parameters.  Due to overfitting, one thing that was discovered was that increasing the number of epochs was not a very good way to 
 
 \todo{figures for Keras}
 
