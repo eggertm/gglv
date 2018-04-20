@@ -191,7 +191,7 @@ The facts listed indicate that an dimension reduction could be performed without
 \caption{Five highest correlation pairs among continuous attributes}
 \label{fig:con-corr}
 \end{figure}
-To start of the modeling process few test runs were executed with all of the models to get a feel of their respective potential. Since the output is highly skewed it was transformed with $y=log(1 + y)$ in order to correct for the skewness, assumed that the liner-models would then perform better. However the results obtained with log-transform where so far off that when executing the inverse with $x^y - 1$ resulted in overflow errors and thus making the experiments useless.
+To start of the modeling process few test runs were executed with all of the models to get a feel of their respective potential. Since the output is highly skewed it was transformed with $y=log(1 + y)$ in order to correct for the skewness, assumed that the liner-models would then perform better. However the results obtained with log-transform were so far off that when executing the inverse with $x^y - 1$ resulted in overflow errors and thus making some of the experiments useless.  Some tests were performed using a TruncatedSVD instead of PCA (marked Test Error SVD), other tests were performed using reduced features, where the most relevant features were selected from a previously trained LassoLARSCV model.  The only cases where using this provided any improvement was when using Linear Regression, which was known to be very sensitive to outliers.
 The highly correlated pairs of attributes where tackled by removing one from each pair, thus removing ['cont9', 'cont12', 'cat2', 'cat3', 'cat4', 'cat5', 'cat6', 'cat7', 'cat8', 'cat86'].
 \begin{table}[H]
 \begin{tabular}{ |c|c|c|c|c| }
@@ -236,20 +236,23 @@ These set of parameters with the whole test dataset where used to predict the lo
 \label{fig:gbr}
 \end{figure}
 
-A neural network was implemented using Keras/Tensorflow.  SKLearn's MLPRegressor was used at first, but Keras allows more fine-grained specification of various parameters of the problem, such as direct minimization of mean absolute error.  During training, a validation set is employed to measure improvement of training.  We opted to use rectified linear units (ReLU).
+A neural network was implemented using Keras/Tensorflow.  SKLearn's MLPRegressor was used at first, but Keras allows more fine-grained specification of various parameters of the problem, such as direct minimization of mean absolute error.  During training, a validation set is employed to measure improvement of training.  We opted to use rectified linear units (ReLU), as this appears to be the most favored method.  Various methods to determine the number of hidden layers and nodes were employed, but from early tests, it appeared that the first hidden layer should contain something between 400 and 600 nodes.  Using dropout apparently requires more than one hidden layer (although this is according to a google search), so the number of hidden layers was  set to 3, varying the size of the first hidden layer and the dropout percentage.  Setting the second and third layer to 50 and 10 appeared to give good results initially and was therefore chosen after some test runs with 1-3 hidden layers.
 
 A big problem with the neural network proved to be overfitting, where the model gave a very low training error but the test error increased over time.  
+
 To address this, two strategies were used, \textit{dropout}, and \textit{early stopping } combined with \textit{model checkpointing}. 
 
-Dropout is a method where a neuron in a layer are blanked (\say{dropped out}) with a probability $p$ during each training stage.  This reduces the interdependency of neurons in that layer, and makes the whole network more robust towards overfitting.
+Dropout is a method where a neuron in a layer are blanked (\say{dropped out}) with a probability $p$ during each training stage.  This reduces the interdependency of neurons in that layer, and makes the whole network more robust towards overfitting.  
 
 Model checkpointing provides a method to save the state of the model every time an improvement of some metric is observed.  In our case, we were concerned with validation loss, i.e. the output of the loss function over the validation set, whenever an improvement is made, the whole model was saved to a file.  
 
 Early stopping is a method to stop training of a neural network when a certain metric stops improving.  This was again used to halt training when validation loss no longer improved for $n_p$ epochs, where $n_p$ is a patience constant, set to 10 in our runs.  
 
-Using a combination of early stopping and model checkpointing allows us to use the model that performs best on the validation data set and throw away the results of overfitting.  Initial results with Keras were quite promising, so some time was spent to test various parameters.  Due to overfitting, one thing that was discovered was that increasing the number of epochs was not a very good way to 
+Using a combination of early stopping and model checkpointing allows us to use the model that performs best on the validation data set and throw away the results of overfitting.  Initial results with Keras were quite promising, so some time was spent to test various parameters.  Due to overfitting, one thing that was discovered was that increasing the number of epochs was not a very good way to increase improvement, but early stopping combined with checkpointing gave a lot better solution.  Training of 100 epochs or less was usually enough to trigger early stopping, i.e. the spot where validation loss started increasing while training loss still kept decreasing. 
 
-\todo{figures for Keras}
+The best result from Kaggle was achieved via 450 nodes and a dropout percentage of ..., and gave 1139.33 as a score.
+
+\todo{figures for Keras - grid search, and training vs cross-validation loss}
 
 % * Fyrir verkefni #1 og #2: Töflur/myndir sem sýna t.d.
 %   * Tíðnirit (e. histograms) fyrir stakar inntaksbreytur/úttaksbreytu, myndir sem sýna fylgni 2ja inntaksbreyta ofl.
@@ -262,6 +265,8 @@ Using a combination of early stopping and model checkpointing allows us to use t
 % * Lýsið stuttlega tilraunum sem skiluðu litlu (“misheppnuðust”)
 
 \section{Conclusion}
+
+Our best results appear to have been reached using Keras/Tensorflow.
 
 \todo{Næstu skref}
 
