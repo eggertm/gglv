@@ -227,7 +227,9 @@ HuberLoss(y, \hat{y}) = \begin{cases}
 \end{equation}
 The Gradient Boosting has quite many parameters, in order to find the best combination of hyper-parameters a thorough grid scan was executed. The grid scan was executed for n\_estimators=[5, 50, 250, 500], alpha=[0.9, 0.5, 0.1], learning\_rate=[0.1, 0.0001], min\_samples\_leaf=[10, 20], min\_samples\_split=[10, 20] and max\_depth=[2, 3, 6]. The lowest mean absolute error of 1161 was obtained with (alpha=0.5, n\_estimators=250, max\_depth=6, learning\_rate=0.1, min\_samples\_leaf=20, min\_samples\_split=20), the results can be seen in figure~\ref{fig:gbr}. Extra parameter lop was executed for only the n\_estimators parameter, giving the most promising results with (alpha=0.5, n\_estimators=600, max\_depth=6, learning\_rate=0.1, min\_samples\_leaf=20, min\_samples\_split=20) with and MAE of 1142.
 
-These set of parameters with the whole test dataset where used to predict the loss for the Kaggle submission. The results where rather disappointing with a MAE error of 1344. Attempt was made to improve this result by first applying NMF on the dataset and then using the Gradient Boosting model and as well with NMF on the dataset and $log(1 + y)$ on the output column. These attempts where speculated to improve the outcome based on the fact it improved in table \ref{tab:start} and the log transform was thought as to address the outliers better. However these attempts resulted in MAE of 1642 and 1625 respectively.
+These set of parameters with the whole test dataset where used to predict the loss for the Kaggle submission. The results where rather disappointing with a MAE error of 1344. Attempt was made to improve this result by first applying NMF on the dataset and then using the Gradient Boosting model and as well with NMF on the dataset and $log(1 + y)$ on the output column. These attempts where speculated to improve the outcome based on the fact it improved in table \ref{tab:start} and the log transform was thought as to address the outliers better. However these attempts resulted in MAE of 1642 and 1625 respectively.  
+
+Eventually, a GradientBoost regressor with  340 n\_estimators was trained using the training dataset using $loss=log(1 + y)$, and converting the predictions back using $loss_{pred} = e^{y_pred-1}$.  The resulting test set was submitted to kaggle and resulted in a mean absolute error of $1155.27344$.
 
 \begin{figure}[H]
 \centering
@@ -248,15 +250,15 @@ Model checkpointing provides a method to save the state of the model every time 
 
 Early stopping is a method to stop training of a neural network when a certain metric stops improving.  This was again used to halt training when validation loss no longer improved for $n_p$ epochs, where $n_p$ is a patience constant, set to 5 in our runs, i.e. when validation loss does not improve for 5 epochs, we halt.  
 
-Using a combination of early stopping and model checkpointing allows us to use the model that performs best on the validation data set and throw away the results of overfitting.  Initial results with Keras were quite promising, so some time was spent to test various parameters.  Due to overfitting, one thing that was discovered was that increasing the number of epochs was not a very good way to increase improvement, but early stopping combined with checkpointing gave a lot better solution.  Training of 100 epochs or less was usually enough to trigger early stopping, i.e. the spot where validation loss started increasing while training loss still kept decreasing. See figure~\ref{fig:keras-overfitting.png}
+Using a combination of early stopping and model checkpointing allows us to use the model that performs best on the validation data set and throw away the results of overfitting.  Initial results with Keras were quite promising, so some time was spent to test various parameters.  Due to overfitting, one thing that was discovered was that increasing the number of epochs was not a very good way to increase improvement, but early stopping combined with checkpointing gave a lot better solution.  Training of 100 epochs or less was usually enough to trigger early stopping, i.e. the spot where validation loss started increasing while training loss still kept decreasing. See figure~\ref{fig:keras-overfitting}
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=15cm,height=8cm,keepaspectratio]{Images/keras-overfitting.png}
-	\caption{Training loss and validation loss of a Keras/Tensorflow }
-	\label{fig:keras-search}
+	\caption{Training loss and validation loss of a Keras/Tensorflow run, using early stopping.}
+	\label{fig:keras-overfitting}
 \end{figure}
 
-Increasing dropout appears to make the loss curve sharper with changes in node count.  There appears to be a possible minimum between 400-450 nodes, and perhaps repeated iterations would help to 
+Increasing dropout appears to make the loss curve sharper with changes in node count.  There appears to be a possible minimum between 400-450 nodes, and perhaps repeated iterations would help to find a better solution.  Figure~\ref{fig:keras-search} shows the best achieved test loss (on separate test set) for each combination.  There were multiple runs for each configuration, and the best result was always picked for the plot.
 
 \begin{figure}[H]
 	\centering
@@ -265,9 +267,8 @@ Increasing dropout appears to make the loss curve sharper with changes in node c
 	\label{fig:keras-search}
 \end{figure}
 
-The best result from Kaggle was achieved via 400 nodes and a dropout percentage of 30\%, and gave 1139.33 as a score on Kaggle.
+The best result was achieved via 400 nodes and a dropout percentage of 30\%, and gave 1139.33 as a score on Kaggle.
 
-\todo{figures for Keras - grid search, and training vs cross-validation loss}
 
 % * Fyrir verkefni #1 og #2: Töflur/myndir sem sýna t.d.
 %   * Tíðnirit (e. histograms) fyrir stakar inntaksbreytur/úttaksbreytu, myndir sem sýna fylgni 2ja inntaksbreyta ofl.
@@ -287,7 +288,7 @@ Future work would investigate better preprocessing, perhaps looking at feature c
 
 The performance of Keras/TensorFlow neural networks warrants further investigation.  One thing that might be considered is to train such a neural network with the whole training set (rather than setting aside a test set), as the Keras neural network only utilizes a static validation set.  The downside to this would be that external validation would be subject to kaggle.com.
 
-Gradient Boosting did not perform as well as expected.  Perhaps this could be investigated using XGBoost, which appears to be quite popular currently, especially for competitions.
+Gradient Boosting also performed well.  Perhaps this could be further investigated using XGBoost, which appears to be quite popular currently, especially for competitions.
 
 
 % * Helstu ályktanir.
