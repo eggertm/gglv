@@ -196,9 +196,9 @@ The highly correlated pairs of attributes where tackled by removing one from eac
 \begin{table}[H]
 \begin{tabular}{ |c|c|c|c|c|c|c| }
 \hline
-Model                     & Train Error & Test Error     & Test Error PCA & Test Error NMF & Test Error SVD & Test Error RF \\
+Model                     & Train Error & Test Error     &  PCA & NMF & SVD & RF \\
 \hline
-LinearRegression          & 1480        & 8798305800.629 & 1336            & 1372 & 1242.29 & 1245.83 \\
+LinearRegression          & 1480        & 8.7e10 & 1336            & 1372 & 1242.29 & 1245.83 \\
 Ridge                     & 1481        & 1477.830       & 1336            & 1367 & -       & -       \\
 RidgeCV                   & 1242.29     & 1241.97        & -               & -    & 1245.68 & 1241.92 \\
 Lasso                     & 1493        & 1481.435       & 1335            & 1380 &    -    &    -    \\
@@ -206,11 +206,11 @@ LassoCV                   & 1249        & 1245.15        & -               &  - 
 LassoLARSCV               & 1245.98     & 1240.34        & -               & -    & 1244.54 &    -    \\
 ElasticNet                & 1248.77     & 1244.99        & 1503            & 1969 & 1245.50 & 1246.94 \\
 BaggingRegressor          & 605         & 1519.984       & 1385            & 1350 & -       &    -    \\
-ExtraTreesRegressor       & 0           & 1535.685       & 1379            & 1359 & -       &    -    \\
-RandomForestRegressor     & 602         & 1519.550       & 1390            & 1344 & -       &    -    \\
-GradientBoostingRegressor & 1453        & 1444.904       & 1317            & 1263 & -       &    -    \\
+ETRegressor       & 0           & 1535.685       & 1379            & 1359 & -       &    -    \\
+RFRegressor     & 602         & 1519.550       & 1390            & 1344 & -       &    -    \\
+GBRegressor & 1453        & 1444.904       & 1317            & 1263 & -       &    -    \\
 MLP                       & 1392        & 1410.916       & 1224            & 1363 & -       &    -    \\
-KNeighborsRegressor       & 1364        & 1672.010       & -               & -    & -       &    -    \\
+KNRegressor       & 1364        & 1672.010       & -               & -    & -       &    -    \\
 SVR                       & 1724        & 1755.613       & -               & -    & -       &    -    \\
 \hline
 \end{tabular}
@@ -248,9 +248,24 @@ Model checkpointing provides a method to save the state of the model every time 
 
 Early stopping is a method to stop training of a neural network when a certain metric stops improving.  This was again used to halt training when validation loss no longer improved for $n_p$ epochs, where $n_p$ is a patience constant, set to 5 in our runs, i.e. when validation loss does not improve for 5 epochs, we halt.  
 
-Using a combination of early stopping and model checkpointing allows us to use the model that performs best on the validation data set and throw away the results of overfitting.  Initial results with Keras were quite promising, so some time was spent to test various parameters.  Due to overfitting, one thing that was discovered was that increasing the number of epochs was not a very good way to increase improvement, but early stopping combined with checkpointing gave a lot better solution.  Training of 100 epochs or less was usually enough to trigger early stopping, i.e. the spot where validation loss started increasing while training loss still kept decreasing. 
+Using a combination of early stopping and model checkpointing allows us to use the model that performs best on the validation data set and throw away the results of overfitting.  Initial results with Keras were quite promising, so some time was spent to test various parameters.  Due to overfitting, one thing that was discovered was that increasing the number of epochs was not a very good way to increase improvement, but early stopping combined with checkpointing gave a lot better solution.  Training of 100 epochs or less was usually enough to trigger early stopping, i.e. the spot where validation loss started increasing while training loss still kept decreasing. See figure~\ref{fig:keras-overfitting.png}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=15cm,height=8cm,keepaspectratio]{Images/keras-overfitting.png}
+	\caption{Training loss and validation loss of a Keras/Tensorflow }
+	\label{fig:keras-search}
+\end{figure}
 
-The best result from Kaggle was achieved via 400 nodes and a dropout percentage of 30\%, and gave 1139.33 as a score.
+Increasing dropout appears to make the loss curve sharper with changes in node count.  There appears to be a possible minimum between 400-450 nodes, and perhaps repeated iterations would help to 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=15cm,height=8cm,keepaspectratio]{Images/keras-search.png}
+	\caption{Results for Keras/TensorFlow grid search}
+	\label{fig:keras-search}
+\end{figure}
+
+The best result from Kaggle was achieved via 400 nodes and a dropout percentage of 30\%, and gave 1139.33 as a score on Kaggle.
 
 \todo{figures for Keras - grid search, and training vs cross-validation loss}
 
@@ -266,9 +281,14 @@ The best result from Kaggle was achieved via 400 nodes and a dropout percentage 
 
 \section{Conclusion}
 
-Our best results appear to have been reached using Keras/Tensorflow.
+Our best results appear to have been reached using Keras/Tensorflow.  It appears that the input is somewhat codependent, and that the Neural Network, with dropout, is able to cope best out of the models investigated with that fact.  Feature reduction using various methods did not appear to improve the performance of other models, and neither did PCA.  
 
-\todo{Næstu skref}
+Future work would investigate better preprocessing, perhaps looking at feature construction methods.
+
+The performance of Keras/TensorFlow neural networks warrants further investigation.  One thing that might be considered is to train such a neural network with the whole training set (rather than setting aside a test set), as the Keras neural network only utilizes a static validation set.  The downside to this would be that external validation would be subject to kaggle.com.
+
+Gradient Boosting did not perform as well as expected.  Perhaps this could be investigated using XGBoost, which appears to be quite popular currently, especially for competitions.
+
 
 % * Helstu ályktanir.
 % * Næstu skref. (Hvernig mynduð þið halda áfram með verkefnið?)
